@@ -85,9 +85,9 @@ Ensure you have the following installed:
 ## Additional Resources
 
 There is a `sundries` folder that contains non-executable code, such as:
-- **React front-end examples**: Demonstrates the UI component structure.
-- **GraphQL and Graphene examples**: Shows how to interact with GraphQL APIs using Graphene in Python.
-- **Screenshots and screen video grabs**: Visuals showcasing example workflows or application states.
+- **React front-end examples**: Basic react skills.
+- **GraphQL and Graphene examples**: Example graphql code.
+- **Screenshots and screen video grabs**: Visuals showcasing some of the UI developed recently.
 
 ## API Documentation
 
