@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./aiml_api_root
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./aiml_api_root:/aiml_api_root
+    environment:
+      REDIS_HOST: ${REDIS_HOST}  # Environment variables are injected from the .env file
+      REDIS_PORT: ${REDIS_PORT}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    depends_on:
+      - redis     
+    env_file:
+      - .env
+
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
+

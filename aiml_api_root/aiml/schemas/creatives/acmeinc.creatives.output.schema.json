@@ -1,0 +1,28 @@
+{
+  "name": "create_ad_creatives",
+  "description": "Create ad creatives for a clinical trial",
+  "input_schema": {
+      "type": "object",
+      "properties": {
+          "creatives": {
+              "type": "array",
+              "items": {
+                  "type": "object",
+                  "properties": {
+                      "target_demo": {
+                          "type": "array",
+                          "items": {"type": "string"}
+                      },
+                      "headline": {"type": "string"},
+                      "primary_text": {"type": "string"},
+                      "description": {"type": "string"},
+                      "call_to_action": {"type": "string"},
+                      "prompt_for_ad_image": {"type": "string"}
+                  },
+                  "required": ["target_demo", "headline", "primary_text", "description", "call_to_action"]
+              }
+          }
+      },
+      "required": ["creatives"]
+  }
+}

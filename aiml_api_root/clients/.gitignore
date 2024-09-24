@@ -1,0 +1,15 @@
+.idea/
+.python-version
+aiml/__pycache__/
+aiml/langchain/__pycache__/
+aiml/langchain/clients/__pycache__/
+aiml/langchain/clients/tests/__pycache__/
+app/Client.py
+app/__pycache__/__init__.cpython-39.pyc
+__pycache__/
+api_clients/__pycache__/
+../aiml/langchain/clients/vault/tests/__pycache__/
+dao/__pycache__/
+utils/__pycache__/
+utils/tests/__pycache__/
+
