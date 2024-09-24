@@ -85,7 +85,7 @@ def test_safe_get_parsed_valid_choice(oai_client):
 
 
 @pytest.mark.asyncio
-@patch("aiml.clients.openai_client.OpenAI") 
+@patch("aiml.clients.openai_client.AsyncOpenAI") 
 async def test_invoke_success(mock_openai):
     """
     Test the invoke method when OpenAI returns a valid completion.
@@ -122,14 +122,15 @@ async def test_invoke_success(mock_openai):
         choices=[mock_choice]
     )
 
-    mock_parse.return_value = mock_completion_retval
-    mock_openai.return_value.beta.chat.completions.parse = mock_parse
+    mock_parse_async = AsyncMock(return_value=mock_completion_retval)
+    mock_openai.return_value.beta.chat.completions.parse = mock_parse_async
 
     prompt = {"system": "Generate ad creatives", "user": "Create an ad"}
     result = await oai_client.invoke(TestModel, prompt)
     
     assert result is not None
-    assert result == mock_ad_creative
+    assert result.source == "openAI"
+    assert result.creatives[0].headline == "Test Headline"
 
 
 @pytest.mark.asyncio

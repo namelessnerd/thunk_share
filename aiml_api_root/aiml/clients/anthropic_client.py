@@ -16,7 +16,7 @@ class AnthropicClient(AIClient):
     def __init__(self, api_key, model, temperature, max_tokens = None):
         super().__init__(model, max_tokens, temperature)
         self.api_key = "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"
-        self.client = anthropic.Anthropic(api_key=api_key)
+        self.client = anthropic.AsyncAnthropic(api_key=api_key)
 
     def customize_prompt(self, prompt42):
         """
@@ -30,7 +30,7 @@ class AnthropicClient(AIClient):
         try:
             # Define the tool for Claude
             resp_tool_defn = response_format.get_schema()
-            response = self.client.messages.create(
+            response = await self.client.messages.create(
                 model=self.model,
                 max_tokens=1000,
                 temperature=self.temperature,
@@ -40,13 +40,16 @@ class AnthropicClient(AIClient):
                     {"role": "user", "content": prompt["user"]}
                 ]
             )
-            tool_use_block = None
-            for content in response.content:
-                if isinstance(content, anthropic.types.tool_use_block.ToolUseBlock):
-                    tool_use_block = content
-                    break
-            if tool_use_block and tool_use_block.input:
-                return response_format.process(tool_use_block.input)
+            if response:
+                tool_use_block = None
+                for content in response.content:
+                    if isinstance(content, anthropic.types.tool_use_block.ToolUseBlock):
+                        tool_use_block = content
+                        break
+                if tool_use_block and tool_use_block.input:
+                    return response_format.process(tool_use_block.input)
+            logging.error("No valid response content from the API.")
+            return None
         except Exception as e:
             traceback.print_exc()
             logging.error(e)

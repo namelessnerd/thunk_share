@@ -1,4 +1,4 @@
-from openai import OpenAI
+from openai import AsyncOpenAI
 from openai.types.chat.parsed_chat_completion import ParsedChatCompletion, ParsedChoice
 from .client_registry import register_client
 from .ai_client import AIClient
@@ -19,7 +19,7 @@ class OpenAIClient(AIClient):
     def __init__(self, api_key, model, temperature, max_tokens = None):
         super().__init__(model, max_tokens, temperature)
         self.api_key = api_key
-        self.client = OpenAI(api_key=api_key)
+        self.client = AsyncOpenAI(api_key=api_key)
 
     def customize_prompt(self, prompt42):
         """
@@ -52,7 +52,7 @@ class OpenAIClient(AIClient):
     async def invoke(self, response_format: Type[T],
                prompt: dict[str, str], retry=False) -> Optional[T]:
         try:
-            completion = self.client.beta.chat.completions.parse(
+            completion = await self.client.beta.chat.completions.parse(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": prompt["system"]},
@@ -71,4 +71,4 @@ class OpenAIClient(AIClient):
         except Exception as e:
             traceback.print_exc()
             logging.error(e)
-            logging.error(f"Error getting Anthropic to generate creatives")
+            logging.error(f"Error getting OpenAI to generate creatives")
