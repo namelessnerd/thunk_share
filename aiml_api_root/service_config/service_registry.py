@@ -129,7 +129,8 @@ class ServiceRegistry:
         Checks the cache first if config is present if not gets it from the config.
         :param customer: The customer name (e.g., 'acmeinc').
         :param service: The service name (e.g., 'creatives' or 'prescreener').
-        :return: List of AIServiceConfig if present
+        :return: List of AIServiceConfig if present or the errors generated
+        :raises: AIServiceConfigException If no config is found for the provider and service
         """
         # aipc_dict = ServiceRegistry.__handle_cache(customer, service)
         # if not aipc_dict:
@@ -137,14 +138,18 @@ class ServiceRegistry:
         ServiceRegistry.__handle_cache(customer, service, "SET",
                                         aipc_dict)
         ai_provider_configs = {}
-        for provider in aipc_dict:
-            try:
-                ai_provider_configs[provider] = AIServiceConfig(**aipc_dict[provider])
-            except ValidationError as e:
-                val_errors = []
-                for error in e.errors():
-                    err_loc = error['loc']
-                    error_msg = error['msg']
-                    val_errors.append(f"Field: {err_loc}, Err: {err_loc}")
-                ai_provider_configs[provider] = ",".join(val_errors)
-        return ai_provider_configs
+        if aipc_dict:
+            for provider in aipc_dict:
+                try:
+                    ai_provider_configs[provider] = AIServiceConfig(**aipc_dict[provider])
+                except ValidationError as e:
+                    val_errors = []
+                    for error in e.errors():
+                        err_loc = error['loc']
+                        error_msg = error['msg']
+                        val_errors.append(f"Field: {err_loc}, Err: {err_loc}")
+                    ai_provider_configs[provider] = ",".join(val_errors)
+            return ai_provider_configs
+        raise AIServiceConfigException({"Error" : f"No valid {service} config for {customer}"})
+
+

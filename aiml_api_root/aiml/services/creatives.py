@@ -17,7 +17,7 @@ from aiml.clients.client_registry import get_client
 from clients.api_clients import ctgov_trials
 from clients.api_clients.ctgov_trials import CTGovClientException
 from utils.measurements import measure_execution_time
-from service_config.service_registry import ServiceRegistry
+from service_config.service_registry import ServiceRegistry, AIServiceConfigException
 from aiml.clients.openai_client import OpenAIClient
 from aiml.clients.ai_client import AIClient
 from aiml.clients.anthropic_client import AnthropicClient
@@ -49,12 +49,14 @@ async def generate(customer_id:str = "acmeinc",
                               eligibility=ct_res["eligibility"])
 
         ai_configs = ServiceRegistry(None).get_ai_service_configs(
-                                                        customer="acmeinc",
-                                                        service="creatives"
-                                                        )
+                                                    customer=customer_id,
+                                                    service="creatives"
+                                                    )           
         ai_tasks = []
-
         for service_key in ai_configs:
+            if isinstance(ai_configs[service_key], str):
+                logging.error(ai_configs[service_key])
+                continue
             ai_client = get_client(service_key, ai_configs[service_key])
             if ai_client:
                 ai_tasks.append(get_creatives(prompt, ai_client))
@@ -65,6 +67,8 @@ async def generate(customer_id:str = "acmeinc",
 
     except CTGovClientException:
         logging.error(f"Error getting trial for {nct_id} from CTGov")
+    except AIServiceConfigException as e:
+        logging.error(e)
     except Exception as e:
         traceback.print_exc()
         logging.error(e)
@@ -73,7 +77,7 @@ async def generate(customer_id:str = "acmeinc",
 @measure_execution_time
 async def main():
     # Call the generate function with example parameters
-    customer_id = "acmeinc"
+    customer_id = "trialx"
     nct_id = "nct06585670"
 
     async for ad_creative in generate(customer_id=customer_id, nct_id=nct_id):

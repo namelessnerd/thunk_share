@@ -54,9 +54,3 @@ class AnthropicClient(AIClient):
             traceback.print_exc()
             logging.error(e)
             logging.error(f"Error getting Anthropic to generate creatives")
-
-
-
-
-
-    
